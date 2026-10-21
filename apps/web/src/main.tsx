@@ -4,6 +4,11 @@ import { Sparkles, Spade, Users, Palette, Trophy, Settings2, ChevronLeft, Bot, L
 import { RANK_LABELS, SUIT_LABELS, type Card, type Suit } from "@haftkhan/game-engine";
 import { chooseStrategicBotCard } from "@haftkhan/game-engine/src/hokm";
 import { createHokmGame, playHokmCard, type HokmGame } from "@haftkhan/game-engine/src/hokm-game";
+import "@fontsource/vazirmatn/400.css";
+import "@fontsource/vazirmatn/500.css";
+import "@fontsource/vazirmatn/600.css";
+import "@fontsource/vazirmatn/700.css";
+import "@fontsource/vazirmatn/800.css";
 import "./styles.css";
 import HaftKhabeesBoard from "./HaftKhabeesBoard";
 
@@ -26,13 +31,17 @@ function runBots(initial: HokmGame): HokmGame {
 function App() {
   const [selected, setSelected] = React.useState("hokm");
   const [showThemes, setShowThemes] = React.useState(false);
-  const [artIndex, setArtIndex] = React.useState(1);
+  const [artIndex, setArtIndex] = React.useState(() => Number(window.localStorage.getItem("haftkhan-card-art") ?? 1));
+  const [themeIndex, setThemeIndex] = React.useState(() => Number(window.localStorage.getItem("haftkhan-theme") ?? 0));
+  React.useEffect(() => { window.localStorage.setItem("haftkhan-card-art", String(artIndex)); }, [artIndex]);
+  React.useEffect(() => { window.localStorage.setItem("haftkhan-theme", String(themeIndex)); }, [themeIndex]);
   const [notice, setNotice] = React.useState("");
   const [game, setGame] = React.useState<HokmGame | null>(null);
   const [turnMessage, setTurnMessage] = React.useState("");
   const start = () => {
     if (selected !== "hokm") {
-      setNotice("میز هفت‌خبیث پایین صفحه آماده بازی است.");
+      setGame(null);
+      setNotice("میز هفت‌خبیث در پایین صفحه آماده بازی است.");
       return;
     }
     const suits: Suit[] = ["spades", "hearts", "diamonds", "clubs"];
@@ -61,12 +70,12 @@ function App() {
     const hasLead = game.hands[0].some(card => card.suit === lead);
     return new Set(game.hands[0].filter(card => !hasLead || card.suit === lead).map(card => card.id));
   }, [game]);
-  return <main className="app-shell">
+  return <main className="app-shell" data-theme={themeIndex}>
     <header className="topbar">
       <a className="brand" href="#" aria-label="هفت‌خوان"><span className="brand-mark"><Spade size={23} fill="currentColor" /></span><span><b>هفت‌خوان</b><small>بازی، با ریشه‌های ایرانی</small></span></a>
       <button className="icon-button" onClick={() => setShowThemes(!showThemes)} aria-label="انتخاب تم"><Palette size={20}/></button>
     </header>
-    {showThemes && <section className="theme-panel"><b>تم برنامه</b><span className="theme-chip active">شب فیروزه‌ای</span><span className="theme-chip">مس و زغال</span><span className="theme-chip">لاجوردی</span><button className="theme-chip" onClick={() => setArtIndex((artIndex % 10) + 1)}>طرح کارت بعدی · {artIndex}/۱۰</button><small>طرح‌های کارت الهام‌گرفته از هنر و نقش‌مایه‌های ایرانی</small></section>}
+    {showThemes && <section className="theme-panel"><b>تم برنامه</b><button className={"theme-chip "+(themeIndex===0?"active":"")} onClick={() => setThemeIndex(0)}>شب فیروزه‌ای</button><button className={"theme-chip "+(themeIndex===1?"active":"")} onClick={() => setThemeIndex(1)}>مس و زغال</button><button className={"theme-chip "+(themeIndex===2?"active":"")} onClick={() => setThemeIndex(2)}>لاجوردی</button><button className="theme-chip" onClick={() => setArtIndex((artIndex % 10) + 1)}>طرح کارت بعدی · {artIndex}/۱۰</button><small>طرح‌های کارت الهام‌گرفته از هنر و نقش‌مایه‌های ایرانی</small></section>}
     <section className="hero">
       <div className="hero-copy"><span className="eyebrow"><Sparkles size={14}/> دورهمی به سبک ایرانی</span><h1>یک دست بازی،<br/><em>هزار قصه.</em></h1><p>حکم چهارنفره با ربات‌های آفلاین، طراحی مینیمال و حال‌وهوای هنر ایرانی.</p><div className="hero-actions"><button className="primary" onClick={start}>شروع بازی <ChevronLeft size={18}/></button><span className="offline"><i/> بدون نیاز به حساب</span></div></div>
       <div className="hero-art" aria-label="نمایش گرافیکی کارت‌ها"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="playing-card card-back" data-art={artIndex}><span className="card-ornament">✳</span><small>هفت‌خوان</small></div><div className="playing-card card-front"><span className="rank">A</span><span className="suit">♠</span><span className="card-bottom">A ♠</span></div><div className="floating-chip">۴ بازیکن <Users size={14}/></div></div>
@@ -81,14 +90,14 @@ function App() {
       </div>
       <p className="turn-message" role="status">{game.finished ? "این دور به پایان رسید." : game.currentPlayer === 0 ? "نوبت توست؛ یک کارت انتخاب کن." : "در انتظار حرکت ربات‌ها..."} {turnMessage}</p>
       <div className="player-hand">{game.hands[0].map((card) => <button key={card.id} className="hand-card" disabled={game.currentPlayer !== 0 || game.finished || !legalCards.has(card.id)} onClick={() => play(card)} aria-label={`${RANK_LABELS[card.rank]} ${SUIT_LABELS[card.suit]}`}><span style={{color:suitColor[card.suit]}}>{RANK_LABELS[card.rank]}</span><b style={{color:suitColor[card.suit]}}>{suitGlyph[card.suit]}</b></button>)}</div>
-      <small className="game-note">نسخه آزمایشی قابل بازی: یک دور ۱۳ دستی با ربات‌های تصادفی قانونی. هوش راهبردی و هدف امتیازی نهایی هنوز تکمیل نشده است.</small>
+      <small className="game-note">نسخه آزمایشی: یک دور تا رسیدن تیم به ۷ دست؛ ربات‌ها از انتخاب قانونی و راهبرد پایه استفاده می‌کنند.</small>
     </section>}
     <section className="section-heading"><div><span className="eyebrow">انتخاب کن و بازی کن</span><h2>میز بعدی تو کدام است؟</h2></div><span className="section-count">۰۲ بازی</span></section>
     <section className="game-grid">
-      <button className={"game-card hokm "+(selected==="hokm"?"chosen":"")} onClick={() => setSelected("hokm")}><div className="game-symbol teal"><Spade size={30} fill="currentColor"/></div><span className="game-tag">تیمی · ۴ نفره</span><h3>حکم</h3><p>با یارت هم‌تیمی شو و برای بردن دست‌ها بازی کن.</p><span className="card-link">انتخاب حکم <ChevronLeft size={16}/></span></button>
-      <button className={"game-card haft "+(selected==="haft"?"chosen":"")} onClick={() => setSelected("haft")}><div className="game-symbol copper"><Layers3 size={30}/></div><span className="game-tag">رقابتی · قوانین قابل تنظیم</span><h3>هفت‌خبیث</h3><p>قوانین پایه در موتور آماده می‌شود؛ رابط بازی هنوز در دست توسعه است.</p><span className="card-link">انتخاب هفت‌خبیث <ChevronLeft size={16}/></span></button>
+      <button className={"game-card hokm "+(selected==="hokm"?"chosen":"")} onClick={() => { setSelected("hokm"); setGame(null); setNotice(""); }}><div className="game-symbol teal"><Spade size={30} fill="currentColor"/></div><span className="game-tag">تیمی · ۴ نفره</span><h3>حکم</h3><p>با یارت هم‌تیمی شو و برای بردن دست‌ها بازی کن.</p><span className="card-link">انتخاب حکم <ChevronLeft size={16}/></span></button>
+      <button className={"game-card haft "+(selected==="haft"?"chosen":"")} onClick={() => { setSelected("haft"); setGame(null); setNotice(""); }}><div className="game-symbol copper"><Layers3 size={30}/></div><span className="game-tag">رقابتی · قوانین قابل تنظیم</span><h3>هفت‌خبیث</h3><p>بازی آفلاین با قوانین ویژه و ربات‌های پایه.</p><span className="card-link">انتخاب هفت‌خبیث <ChevronLeft size={16}/></span></button>
     </section>
-    <section className="feature-strip"><div><Bot/><span><b>ربات‌های پایه</b><small>حرکت قانونی آفلاین</small></span></div><div><Palette/><span><b>هنر ایرانی</b><small>مجموعه کارت‌ها در دست طراحی</small></span></div><div><Trophy/><span><b>امتیاز دست‌ها</b><small>ثبت در طول بازی</small></span></div></section>
+    <section className="feature-strip"><div><Bot/><span><b>ربات‌های پایه</b><small>حرکت قانونی آفلاین</small></span></div><div><Palette/><span><b>هنر ایرانی</b><small>۱۰ طرح کارت ایرانی</small></span></div><div><Trophy/><span><b>امتیاز دست‌ها</b><small>ثبت در طول بازی</small></span></div></section>
     <footer><span className="footer-mark">ه‍</span><span>هفت‌خوان <small>نسخه توسعه · ۰.۱</small></span><button className="settings" onClick={() => setNotice("تنظیمات کامل در مراحل بعدی پیاده‌سازی می‌شوند.")}><Settings2 size={16}/> تنظیمات</button></footer>
   </main>;
 }
