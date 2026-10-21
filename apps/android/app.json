@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "HaftKhan",
+    "slug": "haftkhan",
+    "scheme": "haftkhan",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "plugins": ["expo-router"],
+    "android": {
+      "package": "ir.haftkhan.game",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#071313"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
