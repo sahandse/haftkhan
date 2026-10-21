@@ -1,0 +1,25 @@
+import { useState } from "react";
+import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, Pressable, View } from "react-native";
+
+const teal = "#55D8C2";
+export default function HomeScreen() {
+  const [selected, setSelected] = useState("hokm");
+  const [message, setMessage] = useState("");
+  return <SafeAreaView style={s.safe}>
+    <StatusBar barStyle="light-content" backgroundColor="#071313" />
+    <ScrollView contentContainerStyle={s.container}>
+      <View style={s.top}><View style={s.logo}><Text style={s.spade}>♠</Text></View><View style={s.brand}><Text style={s.brandTitle}>هفت‌خوان</Text><Text style={s.caption}>بازی، با ریشه‌های ایرانی</Text></View><View style={s.version}><Text style={s.versionText}>۰.۱</Text></View></View>
+      <View style={s.hero}><Text style={s.kicker}>✦  دورهمی به سبک ایرانی</Text><Text style={s.title}>یک دست بازی،{"\n"}<Text style={{color:teal}}>هزار قصه.</Text></Text><Text style={s.description}>حکم و هفت‌خبیث؛ با طراحی مینیمال، کارت‌های الهام‌گرفته از هنر ایران و ربات‌هایی برای بازی آفلاین.</Text><View style={s.pill}><View style={s.dot}/><Text style={s.pillText}>قابل بازی آفلاین · بدون نیاز به حساب</Text></View></View>
+      <Text style={s.sectionTitle}>میز بعدی تو کدام است؟</Text>
+      <Pressable accessibilityRole="button" onPress={()=>setSelected("hokm")} style={[s.gameCard,selected==="hokm"&&s.selected]}><View style={s.cardTop}><Text style={s.cardSymbol}>♠</Text><Text style={s.tag}>تیمی · ۴ نفره</Text></View><Text style={s.gameTitle}>حکم</Text><Text style={s.gameDescription}>با یارت هم‌تیمی شو و برای بردن هفت دست بجنگ.</Text></Pressable>
+      <Pressable accessibilityRole="button" onPress={()=>setSelected("haft")} style={[s.gameCard,selected==="haft"&&s.selected]}><View style={s.cardTop}><Text style={[s.cardSymbol,{color:"#DF9A69"}]}>▤</Text><Text style={s.tag}>رقابتی · قوانین قابل تنظیم</Text></View><Text style={s.gameTitle}>هفت‌خبیث</Text><Text style={s.gameDescription}>کارت‌هایت را زودتر تمام کن و حرکت بعدی را غافلگیرکننده بساز.</Text></Pressable>
+      <Pressable style={s.start} onPress={()=>setMessage(selected==="hokm"?"میز حکم انتخاب شد؛ موتور کامل بازی در مرحله بعد متصل می‌شود.":"هفت‌خبیث انتخاب شد؛ تنظیم قوانین در حال آماده‌سازی است.")}><Text style={s.startText}>شروع بازی  ‹</Text></Pressable>
+      {!!message && <Text accessibilityRole="status" style={s.message}>{message}</Text>}
+      <View style={s.features}><Text style={s.feature}>♟  ربات‌های آفلاین</Text><Text style={s.feature}>✳  ۱۰ طرح کارت</Text><Text style={s.feature}>♜  آمار و رکورد</Text></View>
+      <Text style={s.footer}>هفت‌خوان  ·  نسخه آغازین</Text>
+    </ScrollView>
+  </SafeAreaView>;
+}
+const s=StyleSheet.create({
+ safe:{flex:1,backgroundColor:"#071313"},container:{padding:22,paddingBottom:34},top:{flexDirection:"row",alignItems:"center",marginBottom:34},logo:{width:45,height:45,borderRadius:14,borderWidth:1,borderColor:"#2B655C",backgroundColor:"#102B29",alignItems:"center",justifyContent:"center"},spade:{color:teal,fontSize:25},brand:{marginLeft:12,flex:1},brandTitle:{fontSize:19,fontWeight:"800",color:"#EDF6F4",textAlign:"left"},caption:{fontSize:11,color:"#8BA6A2",marginTop:2,textAlign:"left"},version:{borderWidth:1,borderColor:"#203838",borderRadius:9,paddingHorizontal:10,paddingVertical:6},versionText:{color:"#8BA6A2",fontSize:11},hero:{padding:22,borderWidth:1,borderColor:"#21413D",borderRadius:24,backgroundColor:"#0B1D1C",marginBottom:30},kicker:{color:teal,fontSize:12,fontWeight:"600",textAlign:"left"},title:{fontSize:39,fontWeight:"800",lineHeight:56,color:"#EDF6F4",marginTop:14,textAlign:"left"},description:{fontSize:13,lineHeight:25,color:"#A2B9B5",marginTop:13,textAlign:"left"},pill:{alignSelf:"flex-start",flexDirection:"row",alignItems:"center",gap:7,borderWidth:1,borderColor:"#25443F",borderRadius:20,paddingHorizontal:11,paddingVertical:8,marginTop:18},dot:{width:6,height:6,borderRadius:3,backgroundColor:teal},pillText:{fontSize:10,color:"#C1D8D2"},sectionTitle:{fontSize:19,fontWeight:"700",color:"#EDF6F4",marginBottom:14,textAlign:"left"},gameCard:{padding:18,borderRadius:18,borderWidth:1,borderColor:"#203838",backgroundColor:"#0D1E1E",marginBottom:13},selected:{borderColor:"#3A887B"},cardTop:{flexDirection:"row",alignItems:"center",justifyContent:"space-between"},cardSymbol:{fontSize:29,color:teal},tag:{fontSize:10,color:"#93ADA7"},gameTitle:{fontSize:21,fontWeight:"800",color:"#EDF6F4",marginTop:12,textAlign:"left"},gameDescription:{fontSize:12,color:"#9BB2AD",lineHeight:22,marginTop:5,textAlign:"left"},start:{backgroundColor:teal,borderRadius:12,padding:15,alignItems:"center",marginTop:7},startText:{fontWeight:"800",fontSize:14,color:"#06201C"},message:{marginTop:14,color:"#C8E7DE",fontSize:12,lineHeight:22,textAlign:"center"},features:{borderTopWidth:1,borderTopColor:"#1A3030",marginTop:27,paddingTop:18,gap:12},feature:{color:"#A2B9B5",fontSize:12,textAlign:"left"},footer:{marginTop:26,textAlign:"center",color:"#68827D",fontSize:11}
+});
