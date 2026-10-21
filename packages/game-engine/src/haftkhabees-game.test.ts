@@ -41,4 +41,22 @@ describe("HaftKhabees game state", () => {
     expect(next.direction).toBe(-1);
     expect(next.currentPlayer).toBe(3);
   });
+
+  it("adds two cards to a seven penalty and passes the turn", () => {
+    const game = createHaftKhabeesGame();
+    const seven = { id: "test-seven", suit: game.activeSuit, rank: 7 as const };
+    const prepared = { ...game, hands: [[seven, ...game.hands[0]], ...game.hands.slice(1)] };
+    const next = playHaftKhabeesCard(prepared, 0, seven.id);
+    expect(next.pendingDraw).toBe(2);
+    expect(next.currentPlayer).toBe(1);
+  });
+
+  it("skips the next player when an eight is played", () => {
+    const game = createHaftKhabeesGame();
+    const eight = { id: "test-eight", suit: game.activeSuit, rank: 8 as const };
+    const prepared = { ...game, hands: [[eight, ...game.hands[0]], ...game.hands.slice(1)] };
+    const next = playHaftKhabeesCard(prepared, 0, eight.id);
+    expect(next.currentPlayer).toBe(2);
+  });
+
 });
