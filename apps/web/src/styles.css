@@ -36,3 +36,14 @@
 .suit-picker button.chosen-suit{border-color:#55d8c2;color:#55d8c2;background:#153a33}
 .draw-button{margin-top:4px;cursor:pointer}
 .draw-button:disabled{opacity:.45;cursor:not-allowed}
+
+.card-back[data-art="1"]{background-image:url("./assets/card-art/iranian-01.svg")}
+.card-back[data-art="2"]{background-image:url("./assets/card-art/iranian-02.svg")}
+.card-back[data-art="3"]{background-image:url("./assets/card-art/iranian-03.svg")}
+.card-back[data-art="4"]{background-image:url("./assets/card-art/iranian-04.svg")}
+.card-back[data-art="5"]{background-image:url("./assets/card-art/iranian-05.svg")}
+.card-back[data-art="6"]{background-image:url("./assets/card-art/iranian-06.svg")}
+.card-back[data-art="7"]{background-image:url("./assets/card-art/iranian-07.svg")}
+.card-back[data-art="8"]{background-image:url("./assets/card-art/iranian-08.svg")}
+.card-back[data-art="9"]{background-image:url("./assets/card-art/iranian-09.svg")}
+.card-back[data-art="10"]{background-image:url("./assets/card-art/iranian-10.svg")}
