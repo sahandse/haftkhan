@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, Pressable, View } from "react-native";
 import { RANK_LABELS, SUIT_LABELS, type Card, type Suit } from "@haftkhan/game-engine";
-import { chooseBotCard } from "@haftkhan/game-engine/src/hokm";
+import { chooseStrategicBotCard } from "@haftkhan/game-engine/src/hokm";
 import { createHokmGame, playHokmCard, type HokmGame } from "@haftkhan/game-engine/src/hokm-game";
 import HaftKhabeesBoard from "../components/HaftKhabeesBoard";
 
@@ -15,7 +15,7 @@ function runBots(initial: HokmGame): HokmGame {
   while (!game.finished && game.currentPlayer !== 0 && guard < 52) {
     const hand = game.hands[game.currentPlayer];
     const leadSuit = game.trick[0]?.card.suit;
-    game = playHokmCard(game, game.currentPlayer, chooseBotCard(hand, leadSuit).id);
+    game = playHokmCard(game, game.currentPlayer, chooseStrategicBotCard(hand, game.trump, game.trick, game.currentPlayer).id);
     guard += 1;
   }
   return game;
