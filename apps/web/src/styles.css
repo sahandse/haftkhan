@@ -30,3 +30,9 @@
 .hand-card:not(:disabled):hover{transform:translateY(-5px);border-color:var(--teal)}
 .game-note{display:block;color:#77958c;font-size:10px;line-height:1.8;margin-top:4px}
 @media(min-width:701px){.player-hand{justify-content:center}.hand-card{flex-basis:50px;height:78px}}
+
+.suit-picker{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:12px 0;color:#a7c0b9;font-size:11px}
+.suit-picker button{border:1px solid #31594f;background:#102d28;color:#c9e5dd;padding:7px 9px;border-radius:9px;font-size:11px}
+.suit-picker button.chosen-suit{border-color:#55d8c2;color:#55d8c2;background:#153a33}
+.draw-button{margin-top:4px;cursor:pointer}
+.draw-button:disabled{opacity:.45;cursor:not-allowed}
