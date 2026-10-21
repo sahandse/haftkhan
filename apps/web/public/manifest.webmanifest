@@ -1,0 +1,15 @@
+{
+  "name": "هفت‌خوان | بازی کارتی ایرانی",
+  "short_name": "هفت‌خوان",
+  "description": "بازی‌های کارتی ایرانی آفلاین؛ حکم و هفت‌خبیث",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#071313",
+  "theme_color": "#071313",
+  "icons": [
+    { "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
