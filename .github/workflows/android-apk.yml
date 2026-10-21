@@ -1,6 +1,13 @@
 name: Build HaftKhan Android APK
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/android/**"
+      - "packages/game-engine/**"
+      - "package.json"
+      - ".github/workflows/android-apk.yml"
   workflow_dispatch:
 
 permissions:
