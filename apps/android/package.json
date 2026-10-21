@@ -6,7 +6,8 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "export": "expo export --platform android"
   },
   "dependencies": {
     "@haftkhan/game-engine": "0.1.0",
