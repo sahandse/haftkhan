@@ -61,7 +61,7 @@ export default function HomeScreen() {
       <Pressable accessibilityRole="button" onPress={()=>setSelected("hokm")} style={[s.gameCard,selected==="hokm"&&s.selected]}><View style={s.cardTop}><Text style={s.cardSymbol}>♠</Text><Text style={s.tag}>تیمی · ۴ نفره</Text></View><Text style={s.gameTitle}>حکم</Text><Text style={s.gameDescription}>با یارت هم‌تیمی شو و برای بردن دست‌ها بازی کن.</Text></Pressable>
       <Pressable accessibilityRole="button" onPress={()=>setSelected("haft")} style={[s.gameCard,selected==="haft"&&s.selected]}><View style={s.cardTop}><Text style={[s.cardSymbol,{color:"#DF9A69"}]}>▤</Text><Text style={s.tag}>رقابتی · قوانین قابل تنظیم</Text></View><Text style={s.gameTitle}>هفت‌خبیث</Text><Text style={s.gameDescription}>رابط بازی این حالت هنوز در دست توسعه است.</Text></Pressable>
       <Pressable style={s.start} onPress={start}><Text style={s.startText}>{game && !game.finished ? "بازی جدید  ‹" : "شروع بازی  ‹"}</Text></Pressable>
-      {!!message && <Text accessibilityRole="status" style={s.message}>{message}</Text>}
+      {!!message && <Text accessibilityLiveRegion="polite" style={s.message}>{message}</Text>}
       {game && <View style={s.table}>
         <Text style={s.tableTitle}>میز حکم</Text>
         <Text style={s.tableInfo}>خال حکم: {suitGlyph[game.trump]} {SUIT_LABELS[game.trump]}  ·  تیم شما {game.teamTricks[0]}  |  رقیب {game.teamTricks[1]}</Text>
