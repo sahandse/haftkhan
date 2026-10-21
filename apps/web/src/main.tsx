@@ -48,7 +48,7 @@ function App() {
       if (next.lastTrickWinner !== null) setTurnMessage(`این دست را بازیکن ${next.lastTrickWinner + 1} برد.`);
       else setTurnMessage("حرکت ثبت شد.");
       next = runBots(next);
-      if (next.finished) setTurnMessage(`بازی تمام شد؛ نتیجه دست‌ها: تیم شما ${next.teamTricks[0]}، تیم رقیب ${next.teamTricks[1]}.`);
+      if (next.finished) setTurnMessage(`بازی تمام شد؛ ${next.winnerTeam === 0 ? "تیم شما برد" : "تیم رقیب برد"}؛ امتیاز ${next.teamTricks[0]} به ${next.teamTricks[1]}.`);
       else if (next.currentPlayer !== 0) setTurnMessage("ربات‌ها در حال بازی هستند...");
       setGame(next);
     } catch (error) {
