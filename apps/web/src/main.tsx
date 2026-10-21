@@ -26,6 +26,7 @@ function runBots(initial: HokmGame): HokmGame {
 function App() {
   const [selected, setSelected] = React.useState("hokm");
   const [showThemes, setShowThemes] = React.useState(false);
+  const [artIndex, setArtIndex] = React.useState(1);
   const [notice, setNotice] = React.useState("");
   const [game, setGame] = React.useState<HokmGame | null>(null);
   const [turnMessage, setTurnMessage] = React.useState("");
@@ -65,10 +66,10 @@ function App() {
       <a className="brand" href="#" aria-label="هفت‌خوان"><span className="brand-mark"><Spade size={23} fill="currentColor" /></span><span><b>هفت‌خوان</b><small>بازی، با ریشه‌های ایرانی</small></span></a>
       <button className="icon-button" onClick={() => setShowThemes(!showThemes)} aria-label="انتخاب تم"><Palette size={20}/></button>
     </header>
-    {showThemes && <section className="theme-panel"><b>تم برنامه</b><span className="theme-chip active">شب فیروزه‌ای</span><span className="theme-chip">مس و زغال</span><span className="theme-chip">لاجوردی</span><small>تم‌های جایگزین هنوز به تنظیمات کامل متصل نشده‌اند.</small></section>}
+    {showThemes && <section className="theme-panel"><b>تم برنامه</b><span className="theme-chip active">شب فیروزه‌ای</span><span className="theme-chip">مس و زغال</span><span className="theme-chip">لاجوردی</span><button className="theme-chip" onClick={() => setArtIndex((artIndex % 10) + 1)}>طرح کارت بعدی · {artIndex}/۱۰</button><small>طرح‌های کارت الهام‌گرفته از هنر و نقش‌مایه‌های ایرانی</small></section>}
     <section className="hero">
       <div className="hero-copy"><span className="eyebrow"><Sparkles size={14}/> دورهمی به سبک ایرانی</span><h1>یک دست بازی،<br/><em>هزار قصه.</em></h1><p>حکم چهارنفره با ربات‌های آفلاین، طراحی مینیمال و حال‌وهوای هنر ایرانی.</p><div className="hero-actions"><button className="primary" onClick={start}>شروع بازی <ChevronLeft size={18}/></button><span className="offline"><i/> بدون نیاز به حساب</span></div></div>
-      <div className="hero-art" aria-label="نمایش گرافیکی کارت‌ها"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="playing-card card-back"><span className="card-ornament">✳</span><small>هفت‌خوان</small></div><div className="playing-card card-front"><span className="rank">A</span><span className="suit">♠</span><span className="card-bottom">A ♠</span></div><div className="floating-chip">۴ بازیکن <Users size={14}/></div></div>
+      <div className="hero-art" aria-label="نمایش گرافیکی کارت‌ها"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="playing-card card-back" data-art={artIndex}><span className="card-ornament">✳</span><small>هفت‌خوان</small></div><div className="playing-card card-front"><span className="rank">A</span><span className="suit">♠</span><span className="card-bottom">A ♠</span></div><div className="floating-chip">۴ بازیکن <Users size={14}/></div></div>
     </section>
     {notice && <div className="notice" role="status">{notice}<button onClick={() => setNotice("")}>متوجه شدم</button></div>}
     {selected === "haft" && <HaftKhabeesBoard />}
