@@ -101,3 +101,11 @@ button:disabled{cursor:not-allowed}
 .app-shell button:focus-visible,.app-shell a:focus-visible{outline:3px solid #f3c46e;outline-offset:4px;box-shadow:0 0 0 5px #f3c46e22}
 @media(max-width:900px){.console-shell{padding:18px 18px}.three-games{grid-template-columns:repeat(2,minmax(0,1fr))}.three-games .game-card:last-child{grid-column:1/-1}.console-hero{gap:18px}}
 @media(max-width:620px){.console-shell{padding:14px 12px}.console-pill{font-size:10px;padding:6px 8px}.console-hero{grid-template-columns:1fr;padding:25px 0}.console-hero .hero-art{grid-row:1;height:220px}.console-hero h1{font-size:39px}.three-games{grid-template-columns:1fr}.three-games .game-card:last-child{grid-column:auto}.three-games .game-card{min-height:190px}.three-games .game-card p{min-height:0}.page-toolbar{grid-template-columns:1fr 1fr}.page-toolbar>div{grid-column:1/-1;grid-row:1;text-align:right}.page-toolbar .restart{justify-self:start}.page-toolbar .restart:last-child{justify-self:end}.game-page .table-center{min-height:210px}.game-page .hand-card,.fourbarg-hand .hand-card{flex-basis:48px;height:76px}.game-switcher button{padding:9px 4px;font-size:11px}.fourbarg-felt{padding:12px;min-height:200px}.fourbarg-table-cards .mini-card{width:45px;height:65px}}
+
+.history-panel{margin-top:22px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,#0e201e,#091615);padding:18px}
+.history-panel h2{font-size:18px;margin:5px 0 0}
+.history-list{display:flex;flex-direction:column;gap:7px;margin-top:14px}
+.history-row{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;border:1px solid #1d3934;border-radius:10px;padding:10px 12px;background:#0b1a18;font-size:12px}
+.history-row span{color:var(--teal);font-weight:700}
+.history-row small,.empty-history{color:var(--muted);font-size:11px}
+.empty-history{margin:14px 0 3px}
