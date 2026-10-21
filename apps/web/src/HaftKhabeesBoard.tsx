@@ -7,7 +7,7 @@ const ink: Record<Suit,string> = {spades:"#173b34",hearts:"#b64e50",diamonds:"#b
 function chosen(hand: readonly Card[]): Suit {
   return [...suits].sort((a,b)=>hand.filter(c=>c.suit===b).length-hand.filter(c=>c.suit===a).length)[0];
 }
-function playBots(initial: HaftKhabeesGame): HaftKhabeesGame {
+type BotDifficulty = "easy" | "normal" | "hard";\nfunction playBots(initial: HaftKhabeesGame, difficulty: BotDifficulty): HaftKhabeesGame {
   let game=initial, guard=0;
   while(!game.finished && game.currentPlayer!==0 && guard<100) {
     const p=game.currentPlayer, hand=game.hands[p];
@@ -18,24 +18,24 @@ function playBots(initial: HaftKhabeesGame): HaftKhabeesGame {
   }
   return game;
 }
-export default function HaftKhabeesBoard({ onComplete }: { onComplete?: (result: string) => void }) {
+export default function HaftKhabeesBoard({ onComplete, difficulty = "normal" }: { onComplete?: (result: string) => void; difficulty?: BotDifficulty }) {
   const [game,setGame]=React.useState<HaftKhabeesGame>(()=>createHaftKhabeesGame({firstPlayer:0}));
   const [suit,setSuit]=React.useState<Suit>("spades");
   const [message,setMessage]=React.useState("بازی آماده است؛ کارت مجاز را انتخاب کن.");
   const reportedFinish = React.useRef(false);
   React.useEffect(() => { if (game.finished && !reportedFinish.current) { reportedFinish.current = true; onComplete?.(game.winnerPlayer === 0 ? "برد" : "باخت"); } }, [game.finished, game.winnerPlayer, onComplete]);
-  const newGame=()=>{setGame(playBots(createHaftKhabeesGame({firstPlayer:0})));setMessage("بازی جدید شروع شد.");};
+  const newGame=()=>{setGame(playBots(createHaftKhabeesGame({firstPlayer:0}),difficulty));setMessage("بازی جدید شروع شد.");};
   const play=(card:Card)=>{
     if(game.finished||game.currentPlayer!==0)return;
     try{
-      const next=playBots(playHaftKhabeesCard(game,0,card.id,card.rank===11?suit:undefined));
+      const next=playBots(playHaftKhabeesCard(game,0,card.id,card.rank===11?suit:undefined),difficulty);
       setGame(next);
       setMessage(next.finished?(next.winnerPlayer===0?"تبریک، برنده شدی!":"ربات‌ها این دور را بردند."):"حرکت ثبت شد.");
     }catch(e){setMessage(e instanceof Error?e.message:"حرکت مجاز نیست.");}
   };
   const draw=()=>{
     if(game.finished||game.currentPlayer!==0)return;
-    const next=playBots(drawHaftKhabeesCards(game,0));
+    const next=playBots(drawHaftKhabeesCards(game,0),difficulty);
     setGame(next);
     setMessage(game.pendingDraw>0?"کارت‌های جریمه گرفته شد.":"یک کارت کشیدی.");
   };
