@@ -6,6 +6,7 @@ describe("Hokm game state", () => {
     const game = createHokmGame({ trump: "spades", random: () => 0.5 });
     expect(game.hands.map((hand) => hand.length)).toEqual([13, 13, 13, 13]);
     expect(new Set(game.hands.flat().map((card) => card.id)).size).toBe(52);
+    expect(game.winnerTeam).toBeNull();
   });
 
   it("rejects an invalid starting player", () => {
@@ -45,5 +46,25 @@ describe("Hokm game state", () => {
     expect(game.teamTricks[0] + game.teamTricks[1]).toBe(1);
     expect(game.trick).toHaveLength(0);
     expect(game.lastTrickWinner).not.toBeNull();
+  });
+
+  it("ends the round as soon as a team wins seven tricks", () => {
+    let game = createHokmGame({ trump: "spades", firstPlayer: 0, random: () => 0.5 });
+    let guard = 0;
+    while (!game.finished && guard < 52) {
+      const player = game.currentPlayer;
+      const hand = game.hands[player];
+      const leadSuit = game.trick[0]?.card.suit;
+      const legal = leadSuit && hand.some((card) => card.suit === leadSuit)
+        ? hand.find((card) => card.suit === leadSuit)!
+        : hand[0];
+      game = playHokmCard(game, player, legal.id);
+      guard += 1;
+    }
+    expect(game.finished).toBe(true);
+    expect(game.winnerTeam).not.toBeNull();
+    expect(Math.max(...game.teamTricks)).toBeGreaterThanOrEqual(7);
+    expect(guard).toBeLessThanOrEqual(52);
+    expect(() => playHokmCard(game, game.currentPlayer, game.hands[game.currentPlayer][0]?.id ?? "")).toThrow("game is already finished");
   });
 });
