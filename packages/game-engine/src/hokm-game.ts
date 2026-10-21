@@ -7,7 +7,9 @@ export interface HokmGame {
   trump: Suit;
   trick: PlayedCard[];
   teamTricks: [number, number];
+  /** A round ends as soon as a team wins seven tricks, or after all thirteen. */
   finished: boolean;
+  winnerTeam: 0 | 1 | null;
   lastTrickWinner: number | null;
 }
 
@@ -27,6 +29,7 @@ export function createHokmGame(options: {
     trick: [],
     teamTricks: [0, 0],
     finished: false,
+    winnerTeam: null,
     lastTrickWinner: null
   };
 }
@@ -59,7 +62,9 @@ export function playHokmCard(game: HokmGame, player: number, cardId: string): Ho
   const team = result.winner % 2 === 0 ? 0 : 1;
   const teamTricks: [number, number] = [...game.teamTricks] as [number, number];
   teamTricks[team] += 1;
-  const finished = hands.every((items) => items.length === 0);
+  const roundComplete = hands.every((items) => items.length === 0);
+  const wonBySeven = teamTricks[team] >= 7;
+  const finished = roundComplete || wonBySeven;
   return {
     hands,
     currentPlayer: result.winner,
@@ -67,6 +72,7 @@ export function playHokmCard(game: HokmGame, player: number, cardId: string): Ho
     trick: [],
     teamTricks,
     finished,
+    winnerTeam: finished ? (teamTricks[0] === teamTricks[1] ? null : teamTricks[0] > teamTricks[1] ? 0 : 1) : null,
     lastTrickWinner: result.winner
   };
 }
