@@ -27,11 +27,12 @@ export default function HomeScreen() {
   const [game, setGame] = useState<HokmGame | null>(null);
   const [message, setMessage] = useState("");
   const [themeIndex, setThemeIndex] = useState(0);
+  const [preferencesLoaded, setPreferencesLoaded] = useState(false);
   const [completedRounds, setCompletedRounds] = useState(0);
   const lastCountedGame = useRef<HokmGame | null>(null);
   const accent = themeIndex === 1 ? "#DF9A69" : themeIndex === 2 ? "#8CB7FF" : teal;
-  useEffect(() => { AsyncStorage.multiGet(["haftkhan-theme", "haftkhan-completed-rounds"]).then(values => { const theme = Number(values[0][1] ?? 0); setThemeIndex(Number.isInteger(theme) && theme >= 0 && theme <= 2 ? theme : 0); setCompletedRounds(Number(values[1][1] ?? 0) || 0); }).catch(() => {}); }, []);
-  useEffect(() => { AsyncStorage.setItem("haftkhan-theme", String(themeIndex)).catch(() => {}); }, [themeIndex]);
+  useEffect(() => { AsyncStorage.multiGet(["haftkhan-theme", "haftkhan-completed-rounds"]).then(values => { const theme = Number(values[0][1] ?? 0); setThemeIndex(Number.isInteger(theme) && theme >= 0 && theme <= 2 ? theme : 0); setCompletedRounds(Number(values[1][1] ?? 0) || 0); }).catch(() => {}).finally(() => setPreferencesLoaded(true)); }, []);
+  useEffect(() => { if (preferencesLoaded) AsyncStorage.setItem("haftkhan-theme", String(themeIndex)).catch(() => {}); }, [themeIndex, preferencesLoaded]);
   useEffect(() => { if (game?.finished && lastCountedGame.current !== game) { lastCountedGame.current = game; setCompletedRounds(previous => { const next = previous + 1; AsyncStorage.setItem("haftkhan-completed-rounds", String(next)).catch(() => {}); return next; }); } }, [game]);
   const start = () => {
     if (selected !== "hokm") {
