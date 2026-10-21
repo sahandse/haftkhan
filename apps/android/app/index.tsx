@@ -40,7 +40,7 @@ export default function HomeScreen() {
       let next = playHokmCard(game, 0, card.id);
       if (next.lastTrickWinner !== null) setMessage(`بازیکن ${next.lastTrickWinner + 1} این دست را برد.`);
       next = runBots(next);
-      if (next.finished) setMessage(`پایان دور؛ تیم شما ${next.teamTricks[0]}، رقیب ${next.teamTricks[1]} دست.`);
+      if (next.finished) setMessage(`پایان دور؛ ${next.winnerTeam === 0 ? "تیم شما برد" : "تیم رقیب برد"}؛ امتیاز ${next.teamTricks[0]} به ${next.teamTricks[1]}.`);
       setGame(next);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "این حرکت مجاز نیست.");
