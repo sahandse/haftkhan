@@ -1,0 +1,11 @@
+{
+  "name": "haftkhan",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["apps/web", "packages/game-engine"],
+  "scripts": {
+    "dev": "npm run dev --workspace @haftkhan/web",
+    "build": "npm run build --workspace @haftkhan/game-engine && npm run build --workspace @haftkhan/web",
+    "typecheck": "npm run typecheck --workspace @haftkhan/game-engine && npm run typecheck --workspace @haftkhan/web"
+  }
+}
