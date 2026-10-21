@@ -109,3 +109,28 @@ button:disabled{cursor:not-allowed}
 .history-row span{color:var(--teal);font-weight:700}
 .history-row small,.empty-history{color:var(--muted);font-size:11px}
 .empty-history{margin:14px 0 3px}
+
+
+/* Player profile, console focus, and restrained card motion */
+.profile-panel{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;margin-top:20px;padding:20px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(115deg,#112622,#0a1918)}
+.profile-mark{width:54px;height:54px;display:grid;place-items:center;border:1px solid #34665a;border-radius:16px;background:#173a32;color:var(--teal)}
+.profile-copy h2{margin:5px 0;font-size:18px;letter-spacing:-.3px}
+.profile-copy p{margin:0;color:var(--muted);font-size:11px;line-height:1.9}
+.profile-stats{display:flex;gap:8px}
+.profile-stats>div{min-width:62px;padding:10px 12px;text-align:center;border:1px solid #25453e;border-radius:12px;background:#0a1b18}
+.profile-stats b,.profile-stats small{display:block}
+.profile-stats b{font-size:19px;color:#eff8f4;font-variant-numeric:tabular-nums}
+.profile-stats small{margin-top:2px;color:var(--muted);font-size:10px}
+button:focus-visible,a:focus-visible{outline:3px solid #f2b36d;outline-offset:4px;box-shadow:0 0 0 6px #f2b36d22}
+.game-card:focus-visible{transform:translateY(-3px);border-color:#f2b36d}
+.hand-card:not(:disabled){transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.mini-card{animation:card-arrive .24s ease-out both}
+@keyframes card-arrive{from{opacity:.45;transform:translateY(9px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.playing-card{transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s ease}
+.hero-art:hover .card-back{transform:translate(-49px,-3px) rotate(-16deg)}
+.hero-art:hover .card-front{transform:translate(53px,-11px) rotate(15deg)}
+.game-switcher button:focus-visible,.restart:focus-visible,.theme-chip:focus-visible{outline-color:#f2b36d}
+.console-pill{display:inline-flex;align-items:center;gap:6px}
+.game-note{display:block;color:var(--muted);font-size:10px;margin-top:3px;line-height:1.8}
+@media(max-width:620px){.profile-panel{grid-template-columns:auto 1fr;gap:12px;padding:15px}.profile-mark{width:44px;height:44px}.profile-copy h2{font-size:16px}.profile-copy p{font-size:10px}.profile-stats{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr)}.profile-stats>div{min-width:0}.history-row{grid-template-columns:1fr auto;gap:6px 10px}.history-row small{grid-column:1/-1}.console-pill{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.mini-card{animation:none!important}.playing-card,.hand-card:not(:disabled){transition:none!important}}
