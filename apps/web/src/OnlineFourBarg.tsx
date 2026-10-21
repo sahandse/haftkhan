@@ -29,7 +29,7 @@ function applyMove(state: GameState, card: Card, player: number): GameState {
   if (finished && table.length) captured[lastCaptor ?? player] = [...captured[lastCaptor ?? player],...table];
   return { deck, hands, table: finished ? [] : table, captured, turn: (player+1)%4, finished, lastCaptor, message: capturedCards.length ? "کارت‌ها جمع شد!" : "کارت روی میز گذاشته شد." };
 }
-function makeCode() { return Array.from({length:4},()=> "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random()*32)]).join(""); }
+function makeCode() { return Array.from({length:4},()=> "0123456789"[Math.floor(Math.random()*10)]).join(""); }
 function makeId() { return typeof crypto!=="undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2)+Date.now().toString(36); }
 function points(state: GameState, seat: number) { return scoreFourBargCards(state.captured[seat], state.captured.flatMap((cards,i)=>i===seat?[]:cards)); }
 
@@ -155,7 +155,7 @@ export default function OnlineFourBarg() {
   };
   const joinRoom=()=>{
     if(!client){setStatus("سرویس آنلاین هنوز تنظیم نشده است؛ ابتدا تنظیمات Supabase را اضافه کن.");return;}
-    const code=codeInput.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+    const code=codeInput.trim().toUpperCase().replace(/[^0-9]/g,"");
     if(code.length!==4){setStatus("کد اتاق باید دقیقاً ۴ نویسه باشد.");return;}
     const id=makeId();
     setState(null);gameRef.current=null;setPlayers([]);playersRef.current=[];
@@ -180,7 +180,7 @@ export default function OnlineFourBarg() {
     {!roomCode ? <div className="room-lobby">
       <p>یک نفر اتاق می‌سازد و کد ۴ رقمی می‌گیرد. سه نفر دیگر با همان کد وارد می‌شوند؛ بازی پس از ورود هر ۴ نفر شروع می‌شود.</p>
       <button className="primary" onClick={createRoom}>ساخت اتاق و دریافت کد</button>
-      <div className="room-join"><input aria-label="کد اتاق ۴ رقمی" value={codeInput} maxLength={4} inputMode="text" onChange={e=>setCodeInput(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,""))} placeholder="کد ۴ رقمی" /><button className="restart" onClick={joinRoom}>ورود به اتاق</button></div>
+      <div className="room-join"><input aria-label="کد اتاق ۴ رقمی" value={codeInput} maxLength={4} inputMode="text" onChange={e=>setCodeInput(e.target.value.replace(/[^0-9]/g,""))} placeholder="کد ۴ رقمی" /><button className="restart" onClick={joinRoom}>ورود به اتاق</button></div>
       {!client&&<small className="room-warning">برای ارتباط واقعی بین دستگاه‌ها، تنظیمات Supabase باید در ساخت سایت ثبت شود.</small>}
       <p className="room-status-text" role="status">{status}</p>
     </div> : <>
