@@ -18,10 +18,12 @@ function playBots(initial: HaftKhabeesGame): HaftKhabeesGame {
   }
   return game;
 }
-export default function HaftKhabeesBoard() {
+export default function HaftKhabeesBoard({ onComplete }: { onComplete?: (result: string) => void }) {
   const [game,setGame]=React.useState<HaftKhabeesGame>(()=>createHaftKhabeesGame({firstPlayer:0}));
   const [suit,setSuit]=React.useState<Suit>("spades");
   const [message,setMessage]=React.useState("بازی آماده است؛ کارت مجاز را انتخاب کن.");
+  const reportedFinish = React.useRef(false);
+  React.useEffect(() => { if (game.finished && !reportedFinish.current) { reportedFinish.current = true; onComplete?.(game.winnerPlayer === 0 ? "برد" : "باخت"); } }, [game.finished, game.winnerPlayer, onComplete]);
   const newGame=()=>{setGame(playBots(createHaftKhabeesGame({firstPlayer:0})));setMessage("بازی جدید شروع شد.");};
   const play=(card:Card)=>{
     if(game.finished||game.currentPlayer!==0)return;
