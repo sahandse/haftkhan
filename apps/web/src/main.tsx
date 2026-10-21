@@ -1,6 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { Sparkles, Spade, Users, Palette, Trophy, Settings2, ChevronLeft, Bot, Layers3, RotateCcw } from "lucide-react";
+import { Sparkles, Spade, Users, Palette, Trophy, ChevronLeft, Bot, Layers3, RotateCcw, Gamepad2, Home, ArrowLeft, Monitor } from "lucide-react";
 import { RANK_LABELS, SUIT_LABELS, type Card, type Suit } from "@haftkhan/game-engine";
 import { chooseStrategicBotCard } from "@haftkhan/game-engine/src/hokm";
 import { createHokmGame, playHokmCard, type HokmGame } from "@haftkhan/game-engine/src/hokm-game";
@@ -11,97 +11,52 @@ import "@fontsource/vazirmatn/700.css";
 import "@fontsource/vazirmatn/800.css";
 import "./styles.css";
 import HaftKhabeesBoard from "./HaftKhabeesBoard";
+import FourBargBoard from "./FourBargBoard";
 
-const suitGlyph: Record<Suit, string> = { spades: "♠", hearts: "♥", diamonds: "♦", clubs: "♣" };
-const suitColor: Record<Suit, string> = { spades: "#173b34", hearts: "#b64e50", diamonds: "#b64e50", clubs: "#173b34" };
-
-function runBots(initial: HokmGame): HokmGame {
-  let game = initial;
-  let guard = 0;
-  while (!game.finished && game.currentPlayer !== 0 && guard < 52) {
-    const hand = game.hands[game.currentPlayer];
-    const leadSuit = game.trick[0]?.card.suit;
-    const card = chooseStrategicBotCard(hand, game.trump, game.trick, game.currentPlayer);
-    game = playHokmCard(game, game.currentPlayer, card.id);
-    guard += 1;
-  }
-  return game;
-}
-
-function App() {
-  const [selected, setSelected] = React.useState("hokm");
-  const [showThemes, setShowThemes] = React.useState(false);
-  const [artIndex, setArtIndex] = React.useState(() => Number(window.localStorage.getItem("haftkhan-card-art") ?? 1));
-  const [themeIndex, setThemeIndex] = React.useState(() => Number(window.localStorage.getItem("haftkhan-theme") ?? 0));
-  React.useEffect(() => { window.localStorage.setItem("haftkhan-card-art", String(artIndex)); }, [artIndex]);
-  React.useEffect(() => { window.localStorage.setItem("haftkhan-theme", String(themeIndex)); }, [themeIndex]);
-  const [notice, setNotice] = React.useState("");
-  const [game, setGame] = React.useState<HokmGame | null>(null);
-  const [turnMessage, setTurnMessage] = React.useState("");
-  const [completedRounds, setCompletedRounds] = React.useState(() => Number(window.localStorage.getItem("haftkhan-completed-rounds") ?? 0) || 0);
-  const countedGame = React.useRef<HokmGame | null>(null);
-  React.useEffect(() => { if (game?.finished && countedGame.current !== game) { countedGame.current = game; setCompletedRounds(previous => { const next = previous + 1; window.localStorage.setItem("haftkhan-completed-rounds", String(next)); return next; }); } }, [game]);
-  const start = () => {
-    if (selected !== "hokm") {
-      setGame(null);
-      setNotice("میز هفت‌خبیث در پایین صفحه آماده بازی است.");
-      return;
-    }
-    const suits: Suit[] = ["spades", "hearts", "diamonds", "clubs"];
-    const next = createHokmGame({ trump: suits[Math.floor(Math.random() * suits.length)], firstPlayer: 0 });
-    setGame(runBots(next));
-    setNotice("");
-    setTurnMessage("بازی شروع شد؛ کارت اول را انتخاب کن.");
-  };
-  const play = (card: Card) => {
-    if (!game || game.finished || game.currentPlayer !== 0) return;
-    try {
-      let next = playHokmCard(game, 0, card.id);
-      if (next.lastTrickWinner !== null) setTurnMessage(`این دست را بازیکن ${next.lastTrickWinner + 1} برد.`);
-      else setTurnMessage("حرکت ثبت شد.");
-      next = runBots(next);
-      if (next.finished) setTurnMessage(`بازی تمام شد؛ ${next.winnerTeam === 0 ? "تیم شما برد" : "تیم رقیب برد"}؛ امتیاز ${next.teamTricks[0]} به ${next.teamTricks[1]}.`);
-      else if (next.currentPlayer !== 0) setTurnMessage("ربات‌ها در حال بازی هستند...");
-      setGame(next);
-    } catch (error) {
-      setTurnMessage(error instanceof Error ? error.message : "این حرکت مجاز نیست.");
-    }
-  };
-  const legalCards = React.useMemo(() => {
-    if (!game || game.currentPlayer !== 0 || !game.trick.length) return new Set(game?.hands[0]?.map(card => card.id) ?? []);
-    const lead = game.trick[0].card.suit;
-    const hasLead = game.hands[0].some(card => card.suit === lead);
-    return new Set(game.hands[0].filter(card => !hasLead || card.suit === lead).map(card => card.id));
-  }, [game]);
-  return <main className="app-shell" data-theme={themeIndex}>
-    <header className="topbar">
-      <a className="brand" href="#" aria-label="هفت‌خوان"><span className="brand-mark"><Spade size={23} fill="currentColor" /></span><span><b>هفت‌خوان</b><small>بازی، با ریشه‌های ایرانی</small></span></a>
-      <button className="icon-button" onClick={() => setShowThemes(!showThemes)} aria-label="انتخاب تم"><Palette size={20}/></button>
-    </header>
-    {showThemes && <section className="theme-panel"><b>تم برنامه</b><button className={"theme-chip "+(themeIndex===0?"active":"")} onClick={() => setThemeIndex(0)}>شب فیروزه‌ای</button><button className={"theme-chip "+(themeIndex===1?"active":"")} onClick={() => setThemeIndex(1)}>مس و زغال</button><button className={"theme-chip "+(themeIndex===2?"active":"")} onClick={() => setThemeIndex(2)}>لاجوردی</button><button className="theme-chip" onClick={() => setArtIndex((artIndex % 10) + 1)}>طرح کارت بعدی · {artIndex}/۱۰</button><small>طرح‌های کارت الهام‌گرفته از هنر و نقش‌مایه‌های ایرانی</small></section>}
-    <section className="hero">
-      <div className="hero-copy"><span className="eyebrow"><Sparkles size={14}/> دورهمی به سبک ایرانی</span><h1>یک دست بازی،<br/><em>هزار قصه.</em></h1><p>حکم چهارنفره با ربات‌های آفلاین، طراحی مینیمال و حال‌وهوای هنر ایرانی.</p><div className="hero-actions"><button className="primary" onClick={start}>شروع بازی <ChevronLeft size={18}/></button><span className="offline"><i/> بدون نیاز به حساب</span></div></div>
-      <div className="hero-art" aria-label="نمایش گرافیکی کارت‌ها"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="playing-card card-back" data-art={artIndex}><span className="card-ornament">✳</span><small>هفت‌خوان</small></div><div className="playing-card card-front"><span className="rank">A</span><span className="suit">♠</span><span className="card-bottom">A ♠</span></div><div className="floating-chip">۴ بازیکن <Users size={14}/></div></div>
-    </section>
-    {notice && <div className="notice" role="status">{notice}<button onClick={() => setNotice("")}>متوجه شدم</button></div>}
-    {selected === "haft" && <HaftKhabeesBoard />}
-    {game && <section className="play-table" aria-label="میز بازی حکم">
-      <div className="table-heading"><div><span className="eyebrow">بازی آفلاین</span><h2>میز حکم</h2></div><button className="restart" onClick={start}><RotateCcw size={15}/> بازی جدید</button></div>
-      <div className="table-status"><span>خال حکم: <b style={{color:suitColor[game.trump]}}>{suitGlyph[game.trump]} {SUIT_LABELS[game.trump]}</b></span><span>تیم شما: {game.teamTricks[0]} دست</span><span>رقیب: {game.teamTricks[1]} دست</span></div>
-      <div className="table-center"><div className="opponents"><span>ربات ۲ <small>{game.hands[1].length} کارت</small></span><span>ربات ۳ <small>{game.hands[2].length} کارت</small></span><span>ربات ۴ <small>{game.hands[3].length} کارت</small></span></div>
-        <div className="trick-cards">{game.trick.length ? game.trick.map((play) => <div className="mini-card" key={play.player}><small>بازیکن {play.player + 1}</small><b style={{color:suitColor[play.card.suit]}}>{RANK_LABELS[play.card.rank]}{suitGlyph[play.card.suit]}</b></div>) : <span className="empty-trick">کارت‌های دست بعدی اینجا نمایش داده می‌شوند</span>}</div>
-      </div>
-      <p className="turn-message" role="status">{game.finished ? "این دور به پایان رسید." : game.currentPlayer === 0 ? "نوبت توست؛ یک کارت انتخاب کن." : "در انتظار حرکت ربات‌ها..."} {turnMessage}</p>
-      <div className="player-hand">{game.hands[0].map((card) => <button key={card.id} className="hand-card" disabled={game.currentPlayer !== 0 || game.finished || !legalCards.has(card.id)} onClick={() => play(card)} aria-label={`${RANK_LABELS[card.rank]} ${SUIT_LABELS[card.suit]}`}><span style={{color:suitColor[card.suit]}}>{RANK_LABELS[card.rank]}</span><b style={{color:suitColor[card.suit]}}>{suitGlyph[card.suit]}</b></button>)}</div>
-      <small className="game-note">نسخه آزمایشی: یک دور تا رسیدن تیم به ۷ دست؛ ربات‌ها از انتخاب قانونی و راهبرد پایه استفاده می‌کنند.</small>
-    </section>}
-    <section className="section-heading"><div><span className="eyebrow">انتخاب کن و بازی کن</span><h2>میز بعدی تو کدام است؟</h2></div><span className="section-count">۰۲ بازی</span></section>
-    <section className="game-grid">
-      <button className={"game-card hokm "+(selected==="hokm"?"chosen":"")} onClick={() => { setSelected("hokm"); setGame(null); setNotice(""); }}><div className="game-symbol teal"><Spade size={30} fill="currentColor"/></div><span className="game-tag">تیمی · ۴ نفره</span><h3>حکم</h3><p>با یارت هم‌تیمی شو و برای بردن دست‌ها بازی کن.</p><span className="card-link">انتخاب حکم <ChevronLeft size={16}/></span></button>
-      <button className={"game-card haft "+(selected==="haft"?"chosen":"")} onClick={() => { setSelected("haft"); setGame(null); setNotice(""); }}><div className="game-symbol copper"><Layers3 size={30}/></div><span className="game-tag">رقابتی · قوانین قابل تنظیم</span><h3>هفت‌خبیث</h3><p>بازی آفلاین با قوانین ویژه و ربات‌های پایه.</p><span className="card-link">انتخاب هفت‌خبیث <ChevronLeft size={16}/></span></button>
-    </section>
-    <section className="feature-strip"><div><Bot/><span><b>ربات‌های پایه</b><small>حرکت قانونی آفلاین</small></span></div><div><Palette/><span><b>هنر ایرانی</b><small>۱۰ طرح کارت ایرانی</small></span></div><div><Trophy/><span><b>امتیاز دست‌ها</b><small>ثبت در طول بازی</small></span></div></section>
-    <footer><span className="footer-mark">ه‍</span><span>هفت‌خوان <small>نسخه توسعه · ۰.۱</small></span><button className="settings" onClick={() => setNotice("تنظیمات کامل در مراحل بعدی پیاده‌سازی می‌شوند.")}><Settings2 size={16}/> تنظیمات</button></footer>
-  </main>;
+const suitGlyph: Record<Suit,string>={spades:"♠",hearts:"♥",diamonds:"♦",clubs:"♣"};
+const suitColor: Record<Suit,string>={spades:"#173b34",hearts:"#b64e50",diamonds:"#b64e50",clubs:"#173b34"};
+type Page="home"|"hokm"|"haft"|"fourbarg";
+function runBots(initial:HokmGame):HokmGame{let game=initial,guard=0;while(!game.finished&&game.currentPlayer!==0&&guard<52){const card=chooseStrategicBotCard(game.hands[game.currentPlayer],game.trump,game.trick,game.currentPlayer);game=playHokmCard(game,game.currentPlayer,card.id);guard++;}return game;}
+function App(){
+ const [page,setPage]=React.useState<Page>(()=>{const p=window.location.hash.slice(1);return p==="hokm"||p==="haft"||p==="fourbarg"?p:"home";});
+ const [showThemes,setShowThemes]=React.useState(false);
+ const [artIndex,setArtIndex]=React.useState(()=>Number(window.localStorage.getItem("haftkhan-card-art")??1));
+ const [themeIndex,setThemeIndex]=React.useState(()=>Number(window.localStorage.getItem("haftkhan-theme")??0));
+ const [notice,setNotice]=React.useState("");
+ const [game,setGame]=React.useState<HokmGame|null>(null);
+ const [turnMessage,setTurnMessage]=React.useState("");
+ const [completedRounds,setCompletedRounds]=React.useState(()=>Number(window.localStorage.getItem("haftkhan-completed-rounds")??0)||0);
+ const countedGame=React.useRef<HokmGame|null>(null);
+ const pressed=React.useRef<Record<string,boolean>>({});
+ React.useEffect(()=>{window.localStorage.setItem("haftkhan-card-art",String(artIndex));},[artIndex]);
+ React.useEffect(()=>{window.localStorage.setItem("haftkhan-theme",String(themeIndex));},[themeIndex]);
+ React.useEffect(()=>{const sync=()=>{const p=window.location.hash.slice(1);setPage(p==="hokm"||p==="haft"||p==="fourbarg"?p:"home");};window.addEventListener("hashchange",sync);return()=>window.removeEventListener("hashchange",sync);},[]);
+ React.useEffect(()=>{if(page==="hokm"&&!game){const suits:Suit[]=["spades","hearts","diamonds","clubs"];setGame(runBots(createHokmGame({trump:suits[Math.floor(Math.random()*suits.length)],firstPlayer:0})));setTurnMessage("شروع شد؛ کارت مجاز را انتخاب کن.");}},[page,game]);
+ React.useEffect(()=>{if(game?.finished&&countedGame.current!==game){countedGame.current=game;setCompletedRounds(n=>{const next=n+1;window.localStorage.setItem("haftkhan-completed-rounds",String(next));return next;});}},[game]);
+ const navigate=(next:Page)=>{window.location.hash=next==="home"?"":"#"+next;setPage(next);setNotice("");if(next!=="hokm")setGame(null);};
+ const startHokm=()=>{const suits:Suit[]=["spades","hearts","diamonds","clubs"];setGame(runBots(createHokmGame({trump:suits[Math.floor(Math.random()*suits.length)],firstPlayer:0})));setTurnMessage("بازی جدید شروع شد؛ کارت اول را انتخاب کن.");setNotice("");navigate("hokm");};
+ const play=(card:Card)=>{if(!game||game.finished||game.currentPlayer!==0)return;try{let next=playHokmCard(game,0,card.id);setTurnMessage(next.lastTrickWinner!==null?"این دست را بازیکن "+(next.lastTrickWinner+1)+" برد.":"حرکت ثبت شد.");next=runBots(next);if(next.finished)setTurnMessage("بازی تمام شد؛ "+(next.winnerTeam===0?"تیم شما برد":"تیم رقیب برد")+"؛ امتیاز "+next.teamTricks[0]+" به "+next.teamTricks[1]+".");setGame(next);}catch(e){setTurnMessage(e instanceof Error?e.message:"این حرکت مجاز نیست.");}};
+ const legalCards=React.useMemo(()=>{if(!game||game.currentPlayer!==0||!game.trick.length)return new Set(game?.hands[0]?.map(c=>c.id)??[]);const lead=game.trick[0].card.suit,has=game.hands[0].some(c=>c.suit===lead);return new Set(game.hands[0].filter(c=>!has||c.suit===lead).map(c=>c.id));},[game]);
+ React.useEffect(()=>{let raf=0;const loop=()=>{const pads=navigator.getGamepads?.();const pad=pads?.[0];if(pad){const actions:[string,boolean][]=[["up",!!pad.buttons[12]?.pressed||pad.axes[1]<-0.65],["down",!!pad.buttons[13]?.pressed||pad.axes[1]>0.65],["left",!!pad.buttons[14]?.pressed||pad.axes[0]<-0.65],["right",!!pad.buttons[15]?.pressed||pad.axes[0]>0.65],["confirm",!!pad.buttons[0]?.pressed],["back",!!pad.buttons[1]?.pressed]];for(const [name,active] of actions){if(active&&!pressed.current[name]){if(name==="confirm"){(document.activeElement as HTMLElement|null)?.click?.();}else if(name==="back"){navigate("home");}else{const els=Array.from(document.querySelectorAll<HTMLElement>(".app-shell button:not(:disabled),.app-shell a[href]")).filter(el=>el.offsetParent!==null);if(els.length){let i=els.indexOf(document.activeElement as HTMLElement);if(name==="right"||name==="down")i=(i+1+els.length)%els.length;else i=(i-1+els.length)%els.length;els[i]?.focus();}}}pressed.current[name]=active;}}raf=requestAnimationFrame(loop);};raf=requestAnimationFrame(loop);return()=>cancelAnimationFrame(raf);},[]);
+ React.useEffect(()=>{const key=(e:KeyboardEvent)=>{if(e.key==="Escape"||e.key==="Backspace"){e.preventDefault();navigate("home");return;}if(!["ArrowRight","ArrowLeft","ArrowDown","ArrowUp"].includes(e.key))return;const els=Array.from(document.querySelectorAll<HTMLElement>(".app-shell button:not(:disabled),.app-shell a[href]")).filter(el=>el.offsetParent!==null);if(!els.length)return;e.preventDefault();let i=els.indexOf(document.activeElement as HTMLElement);i=(i+(e.key==="ArrowRight"||e.key==="ArrowDown"?1:-1)+els.length)%els.length;els[i]?.focus();};window.addEventListener("keydown",key);return()=>window.removeEventListener("keydown",key);},[]);
+ const pageTitle=page==="hokm"?"حکم":page==="haft"?"هفت‌خبیث":"چهاربرگ";
+ return <main className="app-shell console-shell" data-theme={themeIndex}>
+  <header className="topbar"><button className="brand brand-button" onClick={()=>navigate("home")} aria-label="بازگشت به خانه"><span className="brand-mark"><Spade size={23} fill="currentColor"/></span><span><b>هفت‌خوان</b><small>بازی، با ریشه‌های ایرانی</small></span></button><div className="top-actions"><span className="console-pill"><Gamepad2 size={15}/> حالت کنسول</span><button className="icon-button" onClick={()=>setShowThemes(!showThemes)} aria-label="انتخاب تم"><Palette size={20}/></button></div></header>
+  {showThemes&&<section className="theme-panel"><b>تم برنامه</b><button className={"theme-chip "+(themeIndex===0?"active":"")} onClick={()=>setThemeIndex(0)}>شب فیروزه‌ای</button><button className={"theme-chip "+(themeIndex===1?"active":"")} onClick={()=>setThemeIndex(1)}>مس و زغال</button><button className={"theme-chip "+(themeIndex===2?"active":"")} onClick={()=>setThemeIndex(2)}>لاجوردی</button><button className="theme-chip" onClick={()=>setArtIndex(artIndex%10+1)}>طرح کارت بعدی · {artIndex}/۱۰</button><small>راهنما: جهت‌ها برای جابه‌جایی، A/✕ برای انتخاب، B/○ برای بازگشت</small></section>}
+  {page==="home"?<>
+   <section className="console-hero"><div className="hero-copy"><span className="eyebrow"><Sparkles size={14}/> مجموعه بازی‌های ایرانی</span><h1>بازی را انتخاب کن.<br/><em>میز مال توست.</em></h1><p>سه بازی کارتی، میزهای اختصاصی و تجربه‌ای طراحی‌شده برای نمایشگر بزرگ، مرورگر و دسته بازی.</p><div className="hero-actions"><span className="offline"><i/> آفلاین · بدون حساب</span><span className="offline"><Gamepad2 size={15}/> کنترلر و کیبورد</span></div></div><div className="hero-art"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="playing-card card-back" data-art={artIndex}><span className="card-ornament">✳</span><small>هفت‌خوان</small></div><div className="playing-card card-front"><span className="rank">A</span><span className="suit">♠</span><span className="card-bottom">A ♠</span></div><div className="floating-chip">۳ بازی <Users size={14}/></div></div></section>
+   <section className="section-heading"><div><span className="eyebrow">کتابخانه بازی</span><h2>مقصد بعدی‌ات را انتخاب کن</h2></div><span className="section-count">۰۳ بازی</span></section>
+   <section className="game-grid three-games">
+    <button className="game-card hokm" onClick={startHokm}><div className="game-symbol teal"><Spade size={30} fill="currentColor"/></div><span className="game-tag">تیمی · ۴ نفره</span><h3>حکم</h3><p>با یارت هم‌تیمی شو، خال حکم را دنبال کن و دست‌ها را ببر.</p><span className="card-link">ورود به میز <ChevronLeft size={16}/></span></button>
+    <button className="game-card haft" onClick={()=>navigate("haft")}><div className="game-symbol copper"><Layers3 size={30}/></div><span className="game-tag">رقابتی · ویژه</span><h3>هفت‌خبیث</h3><p>کارت‌های ویژه، جریمه‌ها و رقابت سریع با ربات‌ها.</p><span className="card-link">ورود به میز <ChevronLeft size={16}/></span></button>
+    <button className="game-card fourbarg" onClick={()=>navigate("fourbarg")}><div className="game-symbol violet"><Layers3 size={30}/></div><span className="game-tag">جمع‌آوری · ۲ نفره</span><h3>چهاربرگ</h3><p>کارت‌ها را با جمع ۱۱ یا رتبه مشابه جمع کن و امتیاز بگیر.</p><span className="card-link">ورود به میز <ChevronLeft size={16}/></span></button>
+   </section>
+   <section className="feature-strip"><div><Bot/><span><b>ربات‌های آفلاین</b><small>بازی بدون اینترنت</small></span></div><div><Palette/><span><b>طرح‌های ایرانی</b><small>۱۰ پشت کارت</small></span></div><div><Trophy/><span><b>آمار بازی</b><small>{completedRounds} دور تکمیل‌شده روی این دستگاه</small></span></div></section>
+  </>:<section className="game-page"><div className="page-toolbar"><button className="restart" onClick={()=>navigate("home")}><ArrowLeft size={16}/> بازگشت به کتابخانه</button><div><span className="eyebrow"><Monitor size={14}/> میز بازی · آفلاین</span><h1>{pageTitle}</h1></div><button className="restart" onClick={()=>page==="hokm"?startHokm():navigate(page)}><RotateCcw size={15}/> {page==="hokm"?"بازی جدید":"شروع مجدد"}</button></div><nav className="game-switcher" aria-label="انتخاب بازی"><button className={page==="hokm"?"active":""} onClick={startHokm}>حکم</button><button className={page==="haft"?"active":""} onClick={()=>navigate("haft")}>هفت‌خبیث</button><button className={page==="fourbarg"?"active":""} onClick={()=>navigate("fourbarg")}>چهاربرگ</button></nav>
+   {page==="hokm"&&game&&<section className="play-table" aria-label="میز بازی حکم"><div className="table-heading"><div><span className="eyebrow">چهار بازیکن · ربات آفلاین</span><h2>میز حکم</h2></div><span className="console-pill"><Gamepad2 size={14}/> دسته فعال</span></div><div className="table-status"><span>خال حکم: <b style={{color:suitColor[game.trump]}}>{suitGlyph[game.trump]} {SUIT_LABELS[game.trump]}</b></span><span>تیم شما: {game.teamTricks[0]} دست</span><span>رقیب: {game.teamTricks[1]} دست</span></div><div className="table-center"><div className="opponents"><span>ربات ۲ · یار تو<small>{game.hands[1].length} کارت</small></span><span>ربات ۳<small>{game.hands[2].length} کارت</small></span><span>ربات ۴<small>{game.hands[3].length} کارت</small></span></div><div className="trick-cards">{game.trick.length?game.trick.map(p=><div className="mini-card" key={p.player}><small>بازیکن {p.player+1}</small><b style={{color:suitColor[p.card.suit]}}>{RANK_LABELS[p.card.rank]}{suitGlyph[p.card.suit]}</b></div>):<span className="empty-trick">کارت‌های دست بعدی اینجا قرار می‌گیرند</span>}</div></div><p className="turn-message" role="status">{game.finished?"دور تمام شد.":game.currentPlayer===0?"نوبت توست؛ با جهت‌ها کارت را انتخاب و تأیید کن.":"در انتظار حرکت ربات‌ها..."} {turnMessage}</p><div className="player-hand">{game.hands[0].map(c=><button key={c.id} className="hand-card" disabled={game.currentPlayer!==0||game.finished||!legalCards.has(c.id)} onClick={()=>play(c)} aria-label={RANK_LABELS[c.rank]+" "+SUIT_LABELS[c.suit]}><span style={{color:suitColor[c.suit]}}>{RANK_LABELS[c.rank]}</span><b style={{color:suitColor[c.suit]}}>{suitGlyph[c.suit]}</b></button>)}</div><small className="game-note">جهت‌ها: جابه‌جایی بین دکمه‌ها · A/✕: انتخاب · B/○: خانه</small></section>}
+   {page==="haft"&&<HaftKhabeesBoard/>}{page==="fourbarg"&&<FourBargBoard/>}
+  </section>}
+  <footer><span className="footer-mark">ه‍</span><span>هفت‌خوان <small>مجموعه بازی‌های کارتی</small></span><button className="settings" onClick={()=>setShowThemes(!showThemes)}><Palette size={16}/> ظاهر و تنظیمات</button></footer>
+ </main>;
 }
 createRoot(document.getElementById("root")!).render(<React.StrictMode><App/></React.StrictMode>);
