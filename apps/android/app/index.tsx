@@ -3,7 +3,7 @@ import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, Pressable, View 
 import { RANK_LABELS, SUIT_LABELS, type Card, type Suit } from "@haftkhan/game-engine";
 import { chooseBotCard } from "@haftkhan/game-engine/src/hokm";
 import { createHokmGame, playHokmCard, type HokmGame } from "@haftkhan/game-engine/src/hokm-game";
-import HaftKhabeesBoard from "./HaftKhabeesBoard";
+import HaftKhabeesBoard from "../components/HaftKhabeesBoard";
 
 const teal = "#55D8C2";
 const suitGlyph: Record<Suit, string> = { spades: "♠", hearts: "♥", diamonds: "♦", clubs: "♣" };
