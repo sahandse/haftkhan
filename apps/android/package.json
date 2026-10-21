@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@haftkhan/game-engine": "0.1.0",
     "expo": "~52.0.30",
     "expo-status-bar": "~2.0.1",
     "expo-router": "~4.0.17",
