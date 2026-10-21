@@ -1,7 +1,9 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Sparkles, Spade, Users, Palette, Trophy, Settings2, ChevronLeft, Bot, Layers3, RotateCcw } from "lucide-react";
-import { chooseBotCard, createHokmGame, playHokmCard, RANK_LABELS, SUIT_LABELS, type Card, type HokmGame, type Suit } from "@haftkhan/game-engine";
+import { RANK_LABELS, SUIT_LABELS, type Card, type Suit } from "@haftkhan/game-engine";
+import { chooseBotCard } from "@haftkhan/game-engine/src/hokm";
+import { createHokmGame, playHokmCard, type HokmGame } from "@haftkhan/game-engine/src/hokm-game";
 import "./styles.css";
 
 const suitGlyph: Record<Suit, string> = { spades: "♠", hearts: "♥", diamonds: "♦", clubs: "♣" };
