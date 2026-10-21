@@ -2,7 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { Sparkles, Spade, Users, Palette, Trophy, Settings2, ChevronLeft, Bot, Layers3, RotateCcw } from "lucide-react";
 import { RANK_LABELS, SUIT_LABELS, type Card, type Suit } from "@haftkhan/game-engine";
-import { chooseBotCard } from "@haftkhan/game-engine/src/hokm";
+import { chooseStrategicBotCard } from "@haftkhan/game-engine/src/hokm";
 import { createHokmGame, playHokmCard, type HokmGame } from "@haftkhan/game-engine/src/hokm-game";
 import "./styles.css";
 import HaftKhabeesBoard from "./HaftKhabeesBoard";
@@ -16,7 +16,7 @@ function runBots(initial: HokmGame): HokmGame {
   while (!game.finished && game.currentPlayer !== 0 && guard < 52) {
     const hand = game.hands[game.currentPlayer];
     const leadSuit = game.trick[0]?.card.suit;
-    const card = chooseBotCard(hand, leadSuit);
+    const card = chooseStrategicBotCard(hand, game.trump, game.trick, game.currentPlayer);
     game = playHokmCard(game, game.currentPlayer, card.id);
     guard += 1;
   }
