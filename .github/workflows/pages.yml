@@ -12,6 +12,7 @@ on:
       - "packages/game-engine/**"
       - "package.json"
       - "package-lock.json"
+      - ".env.example"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
