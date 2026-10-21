@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chooseBotCard, resolveTrick } from "./hokm";
+import { chooseBotCard, chooseStrategicBotCard, resolveTrick } from "./hokm";
 import type { Card } from "./index";
 
 const card = (suit: Card["suit"], rank: Card["rank"], id: string): Card => ({ suit, rank, id });
@@ -22,5 +22,10 @@ describe("Hokm helpers", () => {
   it("bot follows the lead suit when it has one", () => {
     const hand = [card("spades", 8, "s-8"), card("hearts", 4, "h-4")];
     expect(chooseBotCard(hand, "hearts").suit).toBe("hearts");
+  });
+  it("prefers a low card when partner is winning", () => {
+    const trick = [{ player: 0, card: card("hearts", 10, "h10") }, { player: 1, card: card("hearts", 5, "h5") }];
+    const hand = [card("hearts", 3, "h3"), card("hearts", 14, "ha")];
+    expect(chooseStrategicBotCard(hand, "spades", trick, 2).id).toBe("h3");
   });
 });
