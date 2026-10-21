@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   web-and-engine:
     runs-on: ubuntu-latest
@@ -24,3 +28,5 @@ jobs:
         run: npm test
       - name: Build web
         run: npm run build
+      - name: Bundle Android
+        run: npm run export --workspace @haftkhan/android
