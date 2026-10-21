@@ -51,7 +51,7 @@ export function isLegalFollowSuit(card: Card, hand: readonly Card[], leadSuit: S
 
 export { createHokmGame, playHokmCard } from "./hokm-game";
 export type { HokmGame } from "./hokm-game";
-export { chooseBotCard, resolveTrick } from "./hokm";
+export { chooseBotCard, chooseStrategicBotCard, resolveTrick } from "./hokm";
 export type { PlayedCard, TrickResult } from "./hokm";
 export {
   createHaftKhabeesRules,
