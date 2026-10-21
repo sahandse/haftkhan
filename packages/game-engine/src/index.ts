@@ -66,3 +66,5 @@ export {
   playHaftKhabeesCard
 } from "./haftkhabees-game";
 export type { HaftKhabeesGame } from "./haftkhabees-game";
+
+export { findFourBargCapture, scoreFourBargCards } from "./fourbarg";
