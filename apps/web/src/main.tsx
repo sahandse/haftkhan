@@ -38,6 +38,9 @@ function App() {
   const [notice, setNotice] = React.useState("");
   const [game, setGame] = React.useState<HokmGame | null>(null);
   const [turnMessage, setTurnMessage] = React.useState("");
+  const [completedRounds, setCompletedRounds] = React.useState(() => Number(window.localStorage.getItem("haftkhan-completed-rounds") ?? 0) || 0);
+  const countedGame = React.useRef<HokmGame | null>(null);
+  React.useEffect(() => { if (game?.finished && countedGame.current !== game) { countedGame.current = game; setCompletedRounds(previous => { const next = previous + 1; window.localStorage.setItem("haftkhan-completed-rounds", String(next)); return next; }); } }, [game]);
   const start = () => {
     if (selected !== "hokm") {
       setGame(null);
