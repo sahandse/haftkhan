@@ -142,3 +142,21 @@ button:focus-visible,a:focus-visible{outline:3px solid #f2b36d;outline-offset:4p
 
 .fourbarg-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
 @media(max-width:520px){.fourbarg-actions{align-items:stretch}.fourbarg-actions .restart{font-size:10px;padding:8px}.table-heading{align-items:flex-start}}
+
+.online-room{margin-top:18px}
+.room-lobby{display:flex;flex-direction:column;gap:14px;margin-top:18px}
+.room-lobby>p{margin:0;color:#a7c0b9;font-size:13px;line-height:1.9}
+.room-join{display:flex;gap:9px;flex-wrap:wrap}
+.room-join input{flex:1;min-width:160px;background:#091816;border:1px solid #2a5148;border-radius:10px;padding:12px 14px;color:#edf6f4;font:inherit;letter-spacing:3px;text-transform:uppercase}
+.room-join input:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.room-warning{color:#e6b37b;font-size:11px;line-height:1.8}
+.room-status-text{color:var(--muted);font-size:12px;line-height:1.8}
+.room-status{font-size:11px;color:#d5aa75;white-space:nowrap}
+.room-status.connected{color:var(--teal)}
+.room-code-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0}
+.room-code-line>span{color:var(--muted);font-size:12px}
+.room-code-line strong{font-size:23px;letter-spacing:5px;color:var(--teal);font-variant-numeric:tabular-nums}
+.room-code-line .restart{margin-right:auto}
+.room-code-line .restart:last-child{margin-right:0}
+.online-room .fourbarg-felt{margin:12px 0}
+@media(max-width:520px){.room-code-line{gap:7px}.room-code-line strong{font-size:19px}.room-code-line .restart{font-size:10px;padding:8px}.room-join{flex-direction:column}.room-join input{width:100%}}
