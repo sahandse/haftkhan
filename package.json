@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "npm run dev --workspace @haftkhan/web",
     "build": "npm run build --workspace @haftkhan/game-engine && npm run build --workspace @haftkhan/web",
-    "typecheck": "npm run typecheck --workspace @haftkhan/game-engine && npm run typecheck --workspace @haftkhan/web"
+    "typecheck": "npm run typecheck --workspace @haftkhan/game-engine && npm run typecheck --workspace @haftkhan/web",
+    "test": "npm run test --workspace @haftkhan/game-engine"
   }
 }
