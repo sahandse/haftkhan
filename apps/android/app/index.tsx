@@ -3,6 +3,7 @@ import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, Pressable, View 
 import { RANK_LABELS, SUIT_LABELS, type Card, type Suit } from "@haftkhan/game-engine";
 import { chooseBotCard } from "@haftkhan/game-engine/src/hokm";
 import { createHokmGame, playHokmCard, type HokmGame } from "@haftkhan/game-engine/src/hokm-game";
+import HaftKhabeesBoard from "./HaftKhabeesBoard";
 
 const teal = "#55D8C2";
 const suitGlyph: Record<Suit, string> = { spades: "♠", hearts: "♥", diamonds: "♦", clubs: "♣" };
@@ -73,6 +74,7 @@ export default function HomeScreen() {
         </ScrollView>
         <Text style={s.note}>نسخه آزمایشی: یک دور ۱۳ دستی با ربات‌های تصادفی قانونی؛ هوش راهبردی و امتیاز نهایی کامل نشده است.</Text>
       </View>}
+      {selected === "haft" && <HaftKhabeesBoard />}
       <View style={s.features}><Text style={s.feature}>♟  ربات‌های پایه آفلاین</Text><Text style={s.feature}>✳  طراحی کارت ایرانی در دست ساخت</Text><Text style={s.feature}>♜  ثبت امتیاز دست‌ها</Text></View>
       <Text style={s.footer}>هفت‌خوان  ·  نسخه توسعه</Text>
     </ScrollView>
