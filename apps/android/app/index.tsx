@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, Pressable, View } from "react-native";
 import { RANK_LABELS, SUIT_LABELS, type Card, type Suit } from "@haftkhan/game-engine";
 import { chooseStrategicBotCard } from "@haftkhan/game-engine/src/hokm";
@@ -25,9 +26,16 @@ export default function HomeScreen() {
   const [selected, setSelected] = useState("hokm");
   const [game, setGame] = useState<HokmGame | null>(null);
   const [message, setMessage] = useState("");
+  const [themeIndex, setThemeIndex] = useState(0);
+  const [completedRounds, setCompletedRounds] = useState(0);
+  const lastCountedGame = useRef<HokmGame | null>(null);
+  const accent = themeIndex === 1 ? "#DF9A69" : themeIndex === 2 ? "#8CB7FF" : teal;
+  useEffect(() => { AsyncStorage.multiGet(["haftkhan-theme", "haftkhan-completed-rounds"]).then(values => { const theme = Number(values[0][1] ?? 0); setThemeIndex(Number.isInteger(theme) && theme >= 0 && theme <= 2 ? theme : 0); setCompletedRounds(Number(values[1][1] ?? 0) || 0); }).catch(() => {}); }, []);
+  useEffect(() => { AsyncStorage.setItem("haftkhan-theme", String(themeIndex)).catch(() => {}); }, [themeIndex]);
+  useEffect(() => { if (game?.finished && lastCountedGame.current !== game) { lastCountedGame.current = game; setCompletedRounds(previous => { const next = previous + 1; AsyncStorage.setItem("haftkhan-completed-rounds", String(next)).catch(() => {}); return next; }); } }, [game]);
   const start = () => {
     if (selected !== "hokm") {
-      setMessage("هفت‌خبیث هنوز به میز قابل‌بازی متصل نشده است.");
+      setMessage("میز هفت‌خبیث در پایین صفحه آماده بازی است.");
       return;
     }
     const suits: Suit[] = ["spades", "hearts", "diamonds", "clubs"];
@@ -53,15 +61,15 @@ export default function HomeScreen() {
     return new Set(game.hands[0].filter(card => !hasLead || card.suit === lead).map(card => card.id));
   }, [game]);
 
-  return <SafeAreaView style={s.safe}>
+  return <SafeAreaView style={[s.safe, { backgroundColor: themeIndex === 1 ? "#120F0D" : themeIndex === 2 ? "#080E1C" : "#071313" }]}>
     <StatusBar barStyle="light-content" backgroundColor="#071313" />
     <ScrollView contentContainerStyle={s.container}>
-      <View style={s.top}><View style={s.logo}><Text style={s.spade}>♠</Text></View><View style={s.brand}><Text style={s.brandTitle}>هفت‌خوان</Text><Text style={s.caption}>بازی، با ریشه‌های ایرانی</Text></View><View style={s.version}><Text style={s.versionText}>۰.۱</Text></View></View>
-      <View style={s.hero}><Text style={s.kicker}>✦  دورهمی به سبک ایرانی</Text><Text style={s.title}>یک دست بازی،{"\n"}<Text style={{color:teal}}>هزار قصه.</Text></Text><Text style={s.description}>حکم چهارنفره با ربات‌های آفلاین و طراحی مینیمال.</Text><View style={s.pill}><View style={s.dot}/><Text style={s.pillText}>بدون نیاز به حساب یا اینترنت</Text></View></View>
+      <View style={s.top}><View style={[s.logo,{borderColor:accent}]}><Text style={[s.spade,{color:accent}]}>♠</Text></View><View style={s.brand}><Text style={s.brandTitle}>هفت‌خوان</Text><Text style={s.caption}>بازی، با ریشه‌های ایرانی</Text></View><Pressable accessibilityRole="button" accessibilityLabel="تغییر تم" onPress={()=>setThemeIndex((themeIndex+1)%3)} style={[s.version,{borderColor:accent}]}><Text style={[s.versionText,{color:accent}]}>{themeIndex===0?"فیروزه‌ای":themeIndex===1?"مس و زغال":"لاجوردی"}</Text></Pressable></View>
+      <View style={s.hero}><Text style={[s.kicker,{color:accent}]}>✦  دورهمی به سبک ایرانی</Text><Text style={s.title}>یک دست بازی،{"\n"}<Text style={{color:accent}}>هزار قصه.</Text></Text><Text style={s.description}>حکم چهارنفره با ربات‌های آفلاین و طراحی مینیمال.</Text><View style={s.pill}><View style={s.dot}/><Text style={s.pillText}>بدون نیاز به حساب یا اینترنت</Text></View></View>
       <Text style={s.sectionTitle}>میز بعدی تو کدام است؟</Text>
-      <Pressable accessibilityRole="button" onPress={()=>setSelected("hokm")} style={[s.gameCard,selected==="hokm"&&s.selected]}><View style={s.cardTop}><Text style={s.cardSymbol}>♠</Text><Text style={s.tag}>تیمی · ۴ نفره</Text></View><Text style={s.gameTitle}>حکم</Text><Text style={s.gameDescription}>با یارت هم‌تیمی شو و برای بردن دست‌ها بازی کن.</Text></Pressable>
-      <Pressable accessibilityRole="button" onPress={()=>setSelected("haft")} style={[s.gameCard,selected==="haft"&&s.selected]}><View style={s.cardTop}><Text style={[s.cardSymbol,{color:"#DF9A69"}]}>▤</Text><Text style={s.tag}>رقابتی · قوانین قابل تنظیم</Text></View><Text style={s.gameTitle}>هفت‌خبیث</Text><Text style={s.gameDescription}>رابط بازی این حالت هنوز در دست توسعه است.</Text></Pressable>
-      <Pressable style={s.start} onPress={start}><Text style={s.startText}>{game && !game.finished ? "بازی جدید  ‹" : "شروع بازی  ‹"}</Text></Pressable>
+      <Pressable accessibilityRole="button" onPress={()=>setSelected("hokm")} style={[s.gameCard,selected==="hokm"&&s.selected,{borderColor:selected==="hokm"?accent:undefined}]}><View style={s.cardTop}><Text style={s.cardSymbol}>♠</Text><Text style={s.tag}>تیمی · ۴ نفره</Text></View><Text style={s.gameTitle}>حکم</Text><Text style={s.gameDescription}>با یارت هم‌تیمی شو و برای بردن دست‌ها بازی کن.</Text></Pressable>
+      <Pressable accessibilityRole="button" onPress={()=>setSelected("haft")} style={[s.gameCard,selected==="haft"&&s.selected,{borderColor:selected==="haft"?accent:undefined}]}><View style={s.cardTop}><Text style={[s.cardSymbol,{color:"#DF9A69"}]}>▤</Text><Text style={s.tag}>رقابتی · قوانین قابل تنظیم</Text></View><Text style={s.gameTitle}>هفت‌خبیث</Text><Text style={s.gameDescription}>بازی آفلاین با کارت‌کشیدن و قوانین ویژه.</Text></Pressable>
+      <Pressable style={[s.start,{backgroundColor:accent}]} onPress={start}><Text style={s.startText}>{game && !game.finished ? "بازی جدید  ‹" : "شروع بازی  ‹"}</Text></Pressable>
       {!!message && <Text accessibilityLiveRegion="polite" style={s.message}>{message}</Text>}
       {game && <View style={s.table}>
         <Text style={s.tableTitle}>میز حکم</Text>
@@ -72,10 +80,10 @@ export default function HomeScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.hand}>
           {game.hands[0].map(card=><Pressable key={card.id} disabled={game.currentPlayer!==0||game.finished||!legalCards.has(card.id)} onPress={()=>play(card)} style={[s.handCard,(game.currentPlayer!==0||game.finished||!legalCards.has(card.id))&&s.cardDisabled]}><Text style={[s.handRank,{color:suitColor[card.suit]}]}>{RANK_LABELS[card.rank]}</Text><Text style={[s.handSuit,{color:suitColor[card.suit]}]}>{suitGlyph[card.suit]}</Text></Pressable>)}
         </ScrollView>
-        <Text style={s.note}>نسخه آزمایشی: یک دور ۱۳ دستی با ربات‌های تصادفی قانونی؛ هوش راهبردی و امتیاز نهایی کامل نشده است.</Text>
+        <Text style={s.note}>نسخه آزمایشی: ربات‌ها حرکت قانونی و راهبرد پایه انتخاب می‌کنند.</Text>
       </View>}
       {selected === "haft" && <HaftKhabeesBoard />}
-      <View style={s.features}><Text style={s.feature}>♟  ربات‌های پایه آفلاین</Text><Text style={s.feature}>✳  طراحی کارت ایرانی در دست ساخت</Text><Text style={s.feature}>♜  ثبت امتیاز دست‌ها</Text></View>
+      <View style={s.features}><Text style={s.feature}>♟  ربات‌های آفلاین با انتخاب راهبردی پایه</Text><Text style={s.feature}>✳  سه تم قابل انتخاب و ذخیره‌شونده</Text><Text style={s.feature}>♜  دورهای تکمیل‌شده: {completedRounds}</Text></View>
       <Text style={s.footer}>هفت‌خوان  ·  نسخه توسعه</Text>
     </ScrollView>
   </SafeAreaView>;
