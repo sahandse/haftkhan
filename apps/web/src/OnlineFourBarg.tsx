@@ -106,6 +106,29 @@ export default function OnlineFourBarg() {
     channel.on("broadcast",{event:"room-full"},({payload})=>{
       if(payload?.target===playerIdRef.current){setStatus("ظرفیت اتاق تکمیل است؛ این اتاق فقط ۴ بازیکن می‌پذیرد.");setConnected(false);setRoomCode("");setRole(null);setSeat(null);}
     });
+    channel.on("broadcast",{event:"leave"},({payload})=>{
+      if(roleRef.current!=="host" || !payload?.id) return;
+      const leavingId=String(payload.id);
+      if(leavingId===playerIdRef.current) return;
+      const current=playersRef.current;
+      const next=current.filter(p=>p.id!==leavingId).map((p,index)=>({...p,seat:index}));
+      if(next.length===current.length) return;
+      publishPlayers(next);
+      const text="یک بازیکن خارج شد؛ اتاق به لابی برگشت. "+next.length+" از ۴ نفر حاضرند.";
+      gameRef.current=null;setState(null);
+      setSeat(next.find(p=>p.id===playerIdRef.current)?.seat??null);
+      seatRef.current=next.find(p=>p.id===playerIdRef.current)?.seat??null;
+      setStatus(text);
+      void channel.send({type:"broadcast",event:"game-reset",payload:{text}});
+      void channel.send({type:"broadcast",event:"room-status",payload:{text}});
+      for(const player of next) {
+        void channel.send({type:"broadcast",event:"player-assigned",payload:{target:player.id,seat:player.seat,players:next}});
+      }
+    });
+    channel.on("broadcast",{event:"game-reset"},({payload})=>{
+      gameRef.current=null;setState(null);
+      if(payload?.text) setStatus(String(payload.text));
+    });
     channel.on("broadcast",{event:"room-roster"},({payload})=>{
       if(Array.isArray(payload?.players)){setPlayers(payload.players);playersRef.current=payload.players;}
     });
@@ -180,7 +203,7 @@ export default function OnlineFourBarg() {
     {!roomCode ? <div className="room-lobby">
       <p>یک نفر اتاق می‌سازد و کد ۴ رقمی می‌گیرد. سه نفر دیگر با همان کد وارد می‌شوند؛ بازی پس از ورود هر ۴ نفر شروع می‌شود.</p>
       <button className="primary" onClick={createRoom}>ساخت اتاق و دریافت کد</button>
-      <div className="room-join"><input aria-label="کد اتاق ۴ رقمی" value={codeInput} maxLength={4} inputMode="text" onChange={e=>setCodeInput(e.target.value.replace(/[^0-9]/g,""))} placeholder="کد ۴ رقمی" /><button className="restart" onClick={joinRoom}>ورود به اتاق</button></div>
+      <div className="room-join"><input aria-label="کد اتاق ۴ رقمی" value={codeInput} maxLength={4} inputMode="numeric" onChange={e=>setCodeInput(e.target.value.replace(/[^0-9]/g,""))} placeholder="کد ۴ رقمی" /><button className="restart" onClick={joinRoom}>ورود به اتاق</button></div>
       {!client&&<small className="room-warning">برای ارتباط واقعی بین دستگاه‌ها، تنظیمات Supabase باید در ساخت سایت ثبت شود.</small>}
       <p className="room-status-text" role="status">{status}</p>
     </div> : <>
