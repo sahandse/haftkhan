@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - "apps/web/**"
+      - "apps/web/src/main.tsx"
+      - "apps/web/public/**"
+      - "PRIVACY.md"
+      - "README.md"
       - "packages/game-engine/**"
       - "package.json"
       - "package-lock.json"
