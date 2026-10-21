@@ -5,6 +5,7 @@ import { RANK_LABELS, SUIT_LABELS, type Card, type Suit } from "@haftkhan/game-e
 import { chooseBotCard } from "@haftkhan/game-engine/src/hokm";
 import { createHokmGame, playHokmCard, type HokmGame } from "@haftkhan/game-engine/src/hokm-game";
 import "./styles.css";
+import HaftKhabeesBoard from "./HaftKhabeesBoard";
 
 const suitGlyph: Record<Suit, string> = { spades: "♠", hearts: "♥", diamonds: "♦", clubs: "♣" };
 const suitColor: Record<Suit, string> = { spades: "#173b34", hearts: "#b64e50", diamonds: "#b64e50", clubs: "#173b34" };
@@ -30,7 +31,7 @@ function App() {
   const [turnMessage, setTurnMessage] = React.useState("");
   const start = () => {
     if (selected !== "hokm") {
-      setNotice("هفت‌خبیث هنوز به میز قابل‌بازی متصل نشده است؛ فعلاً می‌توانی حکم را کامل بازی کنی.");
+      setNotice("میز هفت‌خبیث پایین صفحه آماده بازی است.");
       return;
     }
     const suits: Suit[] = ["spades", "hearts", "diamonds", "clubs"];
@@ -70,6 +71,7 @@ function App() {
       <div className="hero-art" aria-label="نمایش گرافیکی کارت‌ها"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="playing-card card-back"><span className="card-ornament">✳</span><small>هفت‌خوان</small></div><div className="playing-card card-front"><span className="rank">A</span><span className="suit">♠</span><span className="card-bottom">A ♠</span></div><div className="floating-chip">۴ بازیکن <Users size={14}/></div></div>
     </section>
     {notice && <div className="notice" role="status">{notice}<button onClick={() => setNotice("")}>متوجه شدم</button></div>}
+    {selected === "haft" && <HaftKhabeesBoard />}
     {game && <section className="play-table" aria-label="میز بازی حکم">
       <div className="table-heading"><div><span className="eyebrow">بازی آفلاین</span><h2>میز حکم</h2></div><button className="restart" onClick={start}><RotateCcw size={15}/> بازی جدید</button></div>
       <div className="table-status"><span>خال حکم: <b style={{color:suitColor[game.trump]}}>{suitGlyph[game.trump]} {SUIT_LABELS[game.trump]}</b></span><span>تیم شما: {game.teamTricks[0]} دست</span><span>رقیب: {game.teamTricks[1]} دست</span></div>
