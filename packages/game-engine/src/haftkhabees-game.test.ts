@@ -59,4 +59,22 @@ describe("HaftKhabees game state", () => {
     expect(next.currentPlayer).toBe(2);
   });
 
+  it("draws the full stacked penalty and clears it", () => {
+    const game = createHaftKhabeesGame({ random: () => 0.5 });
+    const penalized = { ...game, pendingDraw: 4 };
+    const next = drawHaftKhabeesCards(penalized, 0);
+    expect(next.hands[0]).toHaveLength(11);
+    expect(next.pendingDraw).toBe(0);
+    expect(next.currentPlayer).toBe(1);
+    expect(next.drawPile).toHaveLength(19);
+  });
+
+  it("does not allow ordinary cards while a draw penalty is pending", () => {
+    const game = createHaftKhabeesGame({ random: () => 0.5 });
+    const ordinary = game.hands[0].find(card => ![7, 8, 11, 14].includes(card.rank));
+    if (!ordinary) throw new Error("deterministic hand should contain an ordinary card");
+    const penalized = { ...game, pendingDraw: 2 };
+    expect(() => playHaftKhabeesCard(penalized, 0, ordinary.id)).toThrow(/penalty|draw cards/i);
+  });
+
 });
