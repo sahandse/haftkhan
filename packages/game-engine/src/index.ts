@@ -48,3 +48,21 @@ export function dealCards<T>(items: readonly T[], players: number, cardsEach: nu
 export function isLegalFollowSuit(card: Card, hand: readonly Card[], leadSuit: Suit): boolean {
   return !hand.some((held) => held.suit === leadSuit) || card.suit === leadSuit;
 }
+
+export { createHokmGame, playHokmCard } from "./hokm-game";
+export type { HokmGame } from "./hokm-game";
+export { chooseBotCard, resolveTrick } from "./hokm";
+export type { PlayedCard, TrickResult } from "./hokm";
+export {
+  createHaftKhabeesRules,
+  DEFAULT_HAFTKHABEES_RULES,
+  isLegalHaftKhabeesMove
+} from "./haftkhabees";
+export type { HaftKhabeesRules } from "./haftkhabees";
+export {
+  createHaftKhabeesGame,
+  drawHaftKhabeesCards,
+  isLegalHaftKhabeesGameMove,
+  playHaftKhabeesCard
+} from "./haftkhabees-game";
+export type { HaftKhabeesGame } from "./haftkhabees-game";
