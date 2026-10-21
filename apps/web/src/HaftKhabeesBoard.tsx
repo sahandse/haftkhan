@@ -7,7 +7,8 @@ const ink: Record<Suit,string> = {spades:"#173b34",hearts:"#b64e50",diamonds:"#b
 function chosen(hand: readonly Card[]): Suit {
   return [...suits].sort((a,b)=>hand.filter(c=>c.suit===b).length-hand.filter(c=>c.suit===a).length)[0];
 }
-type BotDifficulty = "easy" | "normal" | "hard";\nfunction playBots(initial: HaftKhabeesGame, difficulty: BotDifficulty): HaftKhabeesGame {
+type BotDifficulty = "easy" | "normal" | "hard";
+function playBots(initial: HaftKhabeesGame, difficulty: BotDifficulty): HaftKhabeesGame {
   let game=initial, guard=0;
   while(!game.finished && game.currentPlayer!==0 && guard<100) {
     const p=game.currentPlayer, hand=game.hands[p];
